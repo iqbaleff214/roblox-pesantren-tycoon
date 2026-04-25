@@ -1,12 +1,12 @@
 # TASKS — Pesantren Tycoon
 
-All tasks derived from `PRD.md`. Work in milestone order — each milestone's foundation is required before the next.
+All tasks derived from `PRD.md`. Work in phase order — each phase's foundation is required before the next.
 
 **Status legend:** `- [ ]` todo · `- [x]` done · `- [~]` in progress · `- [!]` blocked
 
 ---
 
-## Milestone 0 — Project Scaffolding
+## Phase 0 — Project Scaffolding
 
 Create all source files and directories so subsequent tasks have a place to land. No logic yet — just stubs.
 
@@ -252,7 +252,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 1 — Data Layer
+## Phase 1 — Data Layer
 
 - [ ] **T06 · Implement `DataService` — save/load player data**
 
@@ -399,7 +399,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 2 — Building System
+## Phase 2 — Building System
 
 - [ ] **T10 · Implement `BuildingManager` — placement and zone unlock**
 
@@ -464,7 +464,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 3 — Santri System
+## Phase 3 — Santri System
 
 - [ ] **T13 · Implement `SantriManager` — spawn and enroll**
 
@@ -553,7 +553,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 4 — Ustadz System
+## Phase 4 — Ustadz System
 
 - [ ] **T18 · Implement `UstadzManager` — hire and assign**
 
@@ -593,7 +593,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 5 — Reputation & Prestige
+## Phase 5 — Reputation & Prestige
 
 - [ ] **T20 · Implement `ReputationManager`**
 
@@ -639,7 +639,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 6 — Events & Live Retention
+## Phase 6 — Events & Live Retention
 
 - [ ] **T22 · Implement `EventService` — in-game event scheduler**
 
@@ -720,7 +720,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 7 — Social & Multiplayer
+## Phase 7 — Social & Multiplayer
 
 - [ ] **T27 · Implement Visit Mode**
 
@@ -763,7 +763,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 8 — UI & HUD
+## Phase 8 — UI & HUD
 
 - [ ] **T30 · Implement HUD**
 
@@ -873,7 +873,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 9 — Cross-Platform & Performance
+## Phase 9 — Cross-Platform & Performance
 
 - [ ] **T36 · Enable StreamingEnabled and LOD**
 
@@ -921,7 +921,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 10 — Monetization
+## Phase 10 — Monetization
 
 - [ ] **T40 · Implement MarketplaceService product handler**
 
@@ -955,7 +955,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 11 — Tutorial & Progression Flow
+## Phase 11 — Tutorial & Progression Flow
 
 - [ ] **T42 · Implement tutorial flow**
 
@@ -985,7 +985,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ---
 
-## Milestone 12 — QA & Polish
+## Phase 12 — QA & Polish
 
 - [ ] **T43 · Server-side exploit prevention audit**
 
@@ -1038,7 +1038,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Task Summary
 
-| Milestone | Tasks | Description |
+| Phase | Tasks | Description |
 |---|---|---|
 | M0 | T01–T05 | Scaffolding, types, constants, network |
 | M1 | T06–T09 | DataService, EconomyService, Replication, Data modules |
