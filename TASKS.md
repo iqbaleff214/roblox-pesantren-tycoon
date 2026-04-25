@@ -10,7 +10,7 @@ All tasks derived from `PRD.md`. Work in phase order — each phase's foundation
 
 Create all source files and directories so subsequent tasks have a place to land. No logic yet — just stubs.
 
-- [ ] **T01 · Create src/ directory structure**
+- [x] **T01 · Create src/ directory structure**
 
   Create every folder and stub file matching the layout in PRD §17.
 
@@ -62,7 +62,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** `rojo build` runs without path errors.
 
-- [ ] **T02 · Define all Luau types in `Types.luau`**
+- [x] **T02 · Define all Luau types in `Types.luau`**
 
   **File:** `src/Shared/Modules/Types.luau`
 
@@ -141,7 +141,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** File exports all types, `--!strict` passes with no errors, at least one other module successfully imports a type from here.
 
-- [ ] **T03 · Define all tuning constants in `Constants.luau`**
+- [x] **T03 · Define all tuning constants in `Constants.luau`**
 
   **File:** `src/Shared/Modules/Constants.luau`
 
@@ -209,7 +209,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** All constants defined, used in at least one other module, no hardcoded numbers in service/manager files.
 
-- [ ] **T04 · Define all RemoteEvents in `Events.luau`**
+- [x] **T04 · Define all RemoteEvents in `Events.luau`**
 
   **File:** `src/Shared/Net/Events.luau`
 
@@ -238,7 +238,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** All events accessible via `require(Events).PurchaseBuilding` etc., no other script creates RemoteEvents.
 
-- [ ] **T05 · Define all RemoteFunctions in `Functions.luau`**
+- [x] **T05 · Define all RemoteFunctions in `Functions.luau`**
 
   **File:** `src/Shared/Net/Functions.luau`
 
