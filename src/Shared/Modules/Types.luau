@@ -99,6 +99,8 @@ export type PlayerData = {
 	dailyPrayerCount: number, -- reset at day rollover
 	waktuSholatActive: boolean,
 	waktuSholatExpiry: number, -- os.time() expiry
+	-- Zone progression (persisted; derived from santri count via BuildingManager.checkZoneUnlock)
+	zoneUnlocked: number, -- 1–5
 	-- Monetisation
 	starterPackExpiry: number, -- os.time() expiry; 0 = not active
 	-- Metadata

@@ -34,6 +34,7 @@ local function defaultData(): PlayerData
 		tierBerkembangFired = false,
 		tierUnggulanFired = false,
 		tierPrestigeFired = false,
+		zoneUnlocked = 1,
 		dailyPrayerCount = 0,
 		waktuSholatActive = false,
 		waktuSholatExpiry = 0,

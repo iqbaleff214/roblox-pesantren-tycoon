@@ -401,7 +401,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 2 — Building System
 
-- [ ] **T10 · Implement `BuildingManager` — placement and zone unlock**
+- [x] **T10 · Implement `BuildingManager` — placement and zone unlock**
 
   **File:** `src/Server/Managers/BuildingManager.luau`
 
@@ -438,7 +438,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Player can place a Musholla, upgrade it to level 2, and receive zone 2 unlock notification at 20 santri.
 
-- [ ] **T11 · Add BillboardGui to buildings**
+- [x] **T11 · Add BillboardGui to buildings**
 
   **File:** `src/Client/Controllers/BuildController.luau`
 
@@ -451,7 +451,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** All placed buildings show a floating label that updates on upgrade.
 
-- [ ] **T12 · Add SurfaceGui income display to economy/food buildings**
+- [x] **T12 · Add SurfaceGui income display to economy/food buildings**
 
   **File:** `src/Client/Controllers/BuildController.luau`
 
