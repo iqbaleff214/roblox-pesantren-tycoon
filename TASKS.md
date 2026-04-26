@@ -254,7 +254,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 1 — Data Layer
 
-- [ ] **T06 · Implement `DataService` — save/load player data**
+- [x] **T06 · Implement `DataService` — save/load player data**
 
   **File:** `src/Server/Services/DataService.luau`
 
@@ -279,7 +279,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** New player gets default data. Existing player data persists across server restarts. Save failure does not crash server.
 
-- [ ] **T07 · Implement `EconomyService` — currency transactions**
+- [x] **T07 · Implement `EconomyService` — currency transactions**
 
   **File:** `src/Server/Services/EconomyService.luau`
 
@@ -303,7 +303,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Client HUD reflects correct values after every earn/spend. Double-spend impossible (verified by calling spendCurrency twice rapidly on the server).
 
-- [ ] **T08 · Implement `ReplicationService` — sync server state to client**
+- [x] **T08 · Implement `ReplicationService` — sync server state to client**
 
   **File:** `src/Server/Services/ReplicationService.luau`
 
@@ -326,7 +326,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Client HUD updates within 1 second of any server-side currency change.
 
-- [ ] **T09 · Populate all Data definition modules**
+- [x] **T09 · Populate all Data definition modules**
 
   **Files:**
   - `src/Shared/Data/BuildingData.luau`
