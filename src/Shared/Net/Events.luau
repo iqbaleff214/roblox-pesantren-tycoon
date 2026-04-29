@@ -19,15 +19,17 @@ local function getOrCreate(name: string): RemoteEvent
 end
 
 -- ─── Client → Server ──────────────────────────────────────────────────────────
--- PurchaseBuilding  : (buildingType: string, zone: number)
--- UpgradeBuilding   : (buildingId: string)
--- HireUstadz        : (program: string, targetRarity: string?)
--- ResolveMasalah    : (masalahId: string)
--- BukaCabang        : ()
--- TriggerWaqf       : (amount: number)
--- VoteTabligAkbar   : ()
+-- PurchaseBuilding     : (buildingType: string, zone: number)
+-- UpgradeBuilding      : (buildingId: string)
+-- HireUstadz           : (program: string, targetRarity: string?)
+-- ResolveMasalah       : (masalahId: string)
+-- BukaCabang           : ()
+-- TriggerWaqf          : (amount: number)
+-- VoteTabligAkbar      : ()
 -- AcknowledgeWaktuSholat : ()
--- TriggerQurban     : ()
+-- TriggerQurban        : ()
+-- RequestVisit         : (friendUserId: number)       T27 — teleport to friend's server
+-- NotifyVisitArrival   : (hostUserId: number)         T27 — visitor announces arrival
 
 -- ─── Server → Client ──────────────────────────────────────────────────────────
 -- SyncPlayerData    : (data: PlayerData)
@@ -35,6 +37,7 @@ end
 -- NotifyEvent       : (eventType: string, payload: any?)
 -- NotifyGraduation  : (santriId: string, program: string)
 -- NotifyKyaiBesar   : (ustadzName: string, pesantrenName: string)  [broadcast]
+-- SyncWaqfPool      : (poolAmount: number)            T28 — live waqf progress bar
 
 local Events = {
 	-- Client → Server
@@ -47,12 +50,15 @@ local Events = {
 	VoteTabligAkbar = getOrCreate("VoteTabligAkbar"),
 	AcknowledgeWaktuSholat = getOrCreate("AcknowledgeWaktuSholat"),
 	TriggerQurban = getOrCreate("TriggerQurban"),
+	RequestVisit = getOrCreate("RequestVisit"),
+	NotifyVisitArrival = getOrCreate("NotifyVisitArrival"),
 	-- Server → Client (and broadcast)
 	SyncPlayerData = getOrCreate("SyncPlayerData"),
 	NotifyMasalah = getOrCreate("NotifyMasalah"),
 	NotifyEvent = getOrCreate("NotifyEvent"),
 	NotifyGraduation = getOrCreate("NotifyGraduation"),
 	NotifyKyaiBesar = getOrCreate("NotifyKyaiBesar"),
+	SyncWaqfPool = getOrCreate("SyncWaqfPool"),
 }
 
 return Events

@@ -722,7 +722,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 7 — Social & Multiplayer
 
-- [ ] **T27 · Implement Visit Mode**
+- [x] **T27 · Implement Visit Mode**
 
   **Files:** `src/Server/Services/DataService.luau`, `src/Client/Controllers/UIController.luau`
 
@@ -736,7 +736,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Player can visit a friend, leave a Doa, both get Barakah, host gets reputation.
 
-- [ ] **T28 · Implement Waqf Board (shared server pool)**
+- [x] **T28 · Implement Waqf Board (shared server pool)**
 
   **Files:** `src/Server/Services/EconomyService.luau`, `src/Server/Services/EventService.luau`
 
@@ -749,7 +749,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Multiple players donate, pool accumulates, Masjid upgrades visually at threshold.
 
-- [ ] **T29 · Implement Leaderboards**
+- [x] **T29 · Implement Leaderboards**
 
   **File:** `src/Server/Services/DataService.luau`
 

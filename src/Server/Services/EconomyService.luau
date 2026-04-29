@@ -1,10 +1,13 @@
 --!strict
 
+local CollectionService = game:GetService("CollectionService")
+local DataStoreService = game:GetService("DataStoreService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DataService = require(script.Parent.DataService)
 local ReplicationService = require(script.Parent.ReplicationService)
+local Events = require(ReplicatedStorage.Shared.Net.Events)
 local Types = require(ReplicatedStorage.Shared.Modules.Types)
 local Constants = require(ReplicatedStorage.Shared.Modules.Constants)
 
@@ -26,6 +29,37 @@ local premiumPassOwners: { [number]: boolean } = {}
 -- Kunjungan Menteri temporary 5× multiplier: userId → expiry os.time().
 -- Set via EconomyService.setKunjunganActive; checked in rupiahMultiplier.
 local kunjunganExpiry: { [number]: number } = {}
+
+-- ─── T28: Waqf pool (server-wide, persisted per job) ─────────────────────────
+local waqfStore = DataStoreService:GetDataStore("ServerWaqf")
+local waqfJobKey = "server_" .. (if game.JobId ~= "" then game.JobId else "studio")
+local waqfPool: number = 0
+
+local function saveWaqfPool(): ()
+	pcall(function()
+		waqfStore:SetAsync(waqfJobKey, math.floor(waqfPool))
+	end)
+end
+
+local function broadcastWaqfPool(): ()
+	for _, p in Players:GetPlayers() do
+		Events.SyncWaqfPool:FireClient(p, waqfPool)
+	end
+end
+
+-- Load persisted pool on server start; broadcast once clients join via PlayerAdded.
+task.spawn(function()
+	local ok, result = pcall(function(): any
+		return waqfStore:GetAsync(waqfJobKey)
+	end)
+	if ok and type(result) == "number" then
+		waqfPool = result
+	end
+end)
+
+Players.PlayerAdded:Connect(function(player: Player)
+	Events.SyncWaqfPool:FireClient(player, waqfPool)
+end)
 
 -- ─── Internal helpers ──────────────────────────────────────────────────────────
 
@@ -146,6 +180,60 @@ end
 function EconomyService.canAfford(player: Player, currency: Currency, amount: number): boolean
 	return EconomyService.getCurrency(player, currency) >= amount
 end
+
+-- Returns the current server-wide Waqf pool amount.
+function EconomyService.getWaqfPool(): number
+	return waqfPool
+end
+
+-- ─── T28: Waqf donation ────────────────────────────────────────────────────────
+
+-- Deducts `amount` Rupiah from the player and adds it to the shared Waqf pool.
+-- When pool reaches WAQF_UPGRADE_THRESHOLD, upgrades the SharedMasjid and resets pool.
+-- Returns false if amount <= 0 or player cannot afford.
+function EconomyService.donateToWaqf(player: Player, amount: number): boolean
+	if amount <= 0 then
+		return false
+	end
+	if not EconomyService.spendCurrency(player, "Rupiah", amount) then
+		return false
+	end
+
+	waqfPool += amount
+
+	if waqfPool >= Constants.WAQF_UPGRADE_THRESHOLD then
+		waqfPool = 0
+		-- Upgrade every SharedMasjid part in the workspace
+		for _, inst in CollectionService:GetTagged("SharedMasjid") do
+			if inst:IsA("BasePart") then
+				local part = inst :: BasePart
+				local lvl = ((part:GetAttribute("buildingLevel") :: any) :: number?) or 0
+				part:SetAttribute("buildingLevel", lvl + 1)
+			end
+		end
+		for _, p in Players:GetPlayers() do
+			Events.SyncWaqfPool:FireClient(p, 0)
+			Events.NotifyEvent:FireClient(p, { eventType = "WaqfMasjidUpgraded" })
+		end
+	else
+		broadcastWaqfPool()
+	end
+
+	task.spawn(saveWaqfPool)
+	return true
+end
+
+-- ─── RemoteEvent: TriggerWaqf ─────────────────────────────────────────────────
+
+Events.TriggerWaqf.OnServerEvent:Connect(function(player: Player, rawAmount: any)
+	if type(rawAmount) ~= "number" then
+		return
+	end
+	if not DataService.isLoaded(player) then
+		return
+	end
+	EconomyService.donateToWaqf(player, math.floor(rawAmount))
+end)
 
 -- ─── Sedekah Jariyah passive income tick (T17) ────────────────────────────────
 -- Credits each connected player's accumulated alumni Rupiah every 60 seconds.

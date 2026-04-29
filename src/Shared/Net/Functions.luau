@@ -19,14 +19,16 @@ local function getOrCreate(name: string): RemoteFunction
 end
 
 -- ─── Server-implemented remote functions ──────────────────────────────────────
--- GetPlayerData  : () → PlayerData
--- GetLeaderboard : (board: "Reputation" | "Sanad" | "Alumni") → LeaderboardEntry[]
--- CheckGamePass  : (gamePassId: number) → boolean
+-- GetPlayerData     : () → PlayerData
+-- GetLeaderboard    : (board: "Reputation" | "Sanad" | "Alumni") → LeaderboardEntry[]
+-- CheckGamePass     : (gamePassId: number) → boolean
+-- GetPublicSnapshot : (userId: number) → { reputation, alumniCount, buildingList, lastSeen, lastServerId }?
 
 local Functions = {
 	GetPlayerData = getOrCreate("GetPlayerData"),
 	GetLeaderboard = getOrCreate("GetLeaderboard"),
 	CheckGamePass = getOrCreate("CheckGamePass"),
+	GetPublicSnapshot = getOrCreate("GetPublicSnapshot"),
 }
 
 return Functions

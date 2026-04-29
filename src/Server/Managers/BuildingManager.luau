@@ -1,6 +1,7 @@
 --!strict
 
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DataService = require(script.Parent.Parent.Services.DataService)
@@ -166,6 +167,43 @@ function BuildingManager.placeBuilding(player: Player, buildingType: BuildingTyp
 	prompt.GamepadKeyCode = Enum.KeyCode.ButtonX
 	prompt.MaxActivationDistance = 10
 	prompt.Parent = part
+
+	-- T27: Doa mechanic — only on Ibadah buildings (Musholla and upgrades)
+	if def.category == "Ibadah" then
+		local doaPrompt = Instance.new("ProximityPrompt")
+		doaPrompt.ActionText = "Doakan"
+		doaPrompt.KeyboardKeyCode = Enum.KeyCode.F
+		doaPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY
+		doaPrompt.MaxActivationDistance = 10
+		doaPrompt.Parent = part
+
+		local capturedPart = part
+		doaPrompt.Triggered:Connect(function(visitor: Player)
+			local hostId = (capturedPart:GetAttribute("ownerId") :: any) :: number?
+			if hostId == nil then
+				return
+			end
+			if visitor.UserId == hostId then
+				return -- can't doa your own building
+			end
+			if not DataService.isLoaded(visitor) then
+				return
+			end
+			if not DataService.checkDoaCooldown(visitor.UserId, hostId) then
+				return
+			end
+			EconomyService.addCurrency(visitor, "Barakah", Constants.DOA_BARAKAH_GIFT)
+			local host = Players:GetPlayerByUserId(hostId)
+			if host ~= nil and DataService.isLoaded(host) then
+				EconomyService.addCurrency(host, "Barakah", Constants.DOA_BARAKAH_GIFT)
+				Events.NotifyEvent:FireClient(host, { eventType = "DoaReceived", visitorName = visitor.Name })
+			end
+			Events.NotifyEvent:FireClient(visitor, {
+				eventType = "DoaSent",
+				hostName = if host ~= nil then host.Name else "unknown",
+			})
+		end)
+	end
 
 	partById[id] = part
 

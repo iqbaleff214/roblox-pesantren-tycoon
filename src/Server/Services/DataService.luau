@@ -10,6 +10,11 @@ type PlayerData = Types.PlayerData
 local DataService = {}
 
 local store = DataStoreService:GetDataStore("PlayerData_v1")
+local publicStore = DataStoreService:GetDataStore("PublicPesantren")
+local doaCooldownStore = DataStoreService:GetDataStore("DoaCooldowns")
+local leaderboardRepStore = DataStoreService:GetOrderedDataStore("Leaderboard_Reputation")
+local leaderboardSanadStore = DataStoreService:GetOrderedDataStore("Leaderboard_Sanad")
+local leaderboardAlumniStore = DataStoreService:GetOrderedDataStore("Leaderboard_Alumni")
 
 -- In-memory cache keyed by UserId. Populated on loadPlayer, cleared on unloadPlayer.
 local cache: { [number]: PlayerData } = {}
@@ -129,6 +134,14 @@ function DataService.savePlayer(player: Player): ()
 	if not ok then
 		warn(string.format("[DataService] SavePlayer failed for %s: %s", player.Name, tostring(err)))
 	end
+
+	-- Side-effects: non-blocking, failures tolerated
+	task.spawn(function()
+		DataService.writePublicSnapshot(player)
+	end)
+	task.spawn(function()
+		DataService.updateLeaderboards(player)
+	end)
 end
 
 -- Saves and removes the player from the in-memory cache. Call on PlayerRemoving.
@@ -161,6 +174,102 @@ end
 -- Returns true if the player's data is loaded and in cache.
 function DataService.isLoaded(player: Player): boolean
 	return cache[player.UserId] ~= nil
+end
+
+-- ─── T27: Public snapshot ──────────────────────────────────────────────────────
+
+-- Writes a public-facing snapshot for this player. Called from savePlayer.
+-- Failures are silently swallowed — public data is best-effort.
+function DataService.writePublicSnapshot(player: Player): ()
+	local data = cache[player.UserId]
+	if data == nil then
+		return
+	end
+	local snapshot = {
+		reputation = data.reputation,
+		alumniCount = data.alumniCount,
+		buildingList = data.buildingList,
+		lastSeen = os.time(),
+		lastServerId = game.JobId,
+	}
+	pcall(function()
+		publicStore:SetAsync("public_" .. player.UserId, snapshot)
+	end)
+end
+
+-- Returns the public snapshot for any userId, or nil on failure/not found.
+function DataService.readPublicSnapshot(userId: number): { [string]: any }?
+	local ok, result = pcall(function(): any
+		return publicStore:GetAsync("public_" .. userId)
+	end)
+	if not ok then
+		return nil
+	end
+	return (result :: any) :: { [string]: any }?
+end
+
+-- ─── T27: Doa cooldown ─────────────────────────────────────────────────────────
+
+-- Returns true and records the cooldown if the visitor-host pair is not on cooldown.
+-- Returns false if still within DOA_COOLDOWN_SEC, or on DataStore error.
+function DataService.checkDoaCooldown(visitorId: number, hostId: number): boolean
+	local key = "doa_" .. visitorId .. "_" .. hostId
+	local ok, result = pcall(function(): any
+		return doaCooldownStore:GetAsync(key)
+	end)
+	if not ok then
+		return false
+	end
+	local lastDoa = (result :: any) :: number?
+	local Constants = require(game:GetService("ReplicatedStorage").Shared.Modules.Constants)
+	if lastDoa ~= nil and os.time() < lastDoa + (Constants :: any).DOA_COOLDOWN_SEC then
+		return false
+	end
+	local setOk = pcall(function()
+		doaCooldownStore:SetAsync(key, os.time())
+	end)
+	return setOk
+end
+
+-- ─── T29: Leaderboards ─────────────────────────────────────────────────────────
+
+-- Updates all three ordered leaderboard stores for this player.
+-- Runs in task.spawn from savePlayer — failures are silent.
+function DataService.updateLeaderboards(player: Player): ()
+	local data = cache[player.UserId]
+	if data == nil then
+		return
+	end
+	local key = tostring(player.UserId)
+	pcall(function()
+		leaderboardRepStore:SetAsync(key, math.max(0, math.floor(data.reputation)))
+	end)
+	pcall(function()
+		leaderboardSanadStore:SetAsync(key, math.max(0, math.floor(data.sanad)))
+	end)
+	pcall(function()
+		leaderboardAlumniStore:SetAsync(key, math.max(0, math.floor(data.alumniCount)))
+	end)
+end
+
+-- Returns top-10 entries for the given leaderboard, sorted descending.
+-- Each entry: { player = userId string, value = score }.
+function DataService.getLeaderboard(board: string): { { player: string, value: number } }
+	local ds = if board == "Reputation" then leaderboardRepStore
+		elseif board == "Sanad" then leaderboardSanadStore
+		else leaderboardAlumniStore
+	local ok, pages = pcall(function(): any
+		return ds:GetSortedAsync(false, 10)
+	end)
+	if not ok then
+		return {}
+	end
+	local results: { { player: string, value: number } } = {}
+	for _, entry in (pages :: any):GetCurrentPage() do
+		local e = entry :: any
+		table.insert(results, { player = tostring(e.key), value = e.value })
+	end
+	return results
 end
 
 return DataService
