@@ -13,6 +13,11 @@ local EconomyService = require(script.Parent.Parent.Services.EconomyService)
 local ReplicationService = require(script.Parent.Parent.Services.ReplicationService)
 local ReputationManager = require(script.Parent.ReputationManager)
 local BuildingManager = require(script.Parent.BuildingManager)
+
+-- Lazy: EventService loads before SantriManager but depends on SantriManager at runtime.
+local function eventSvc()
+	return require(script.Parent.Parent.Services.EventService)
+end
 local Events = require(ReplicatedStorage.Shared.Net.Events)
 local SantriDefs = require(ReplicatedStorage.Shared.Data.SantriData)
 local BuildingDefs = require(ReplicatedStorage.Shared.Data.BuildingData)
@@ -202,6 +207,23 @@ local function graduateSantri(player: Player, santriId: string, santri: SantriRe
 	Events.NotifyGraduation:FireClient(player, santriId, santri.program)
 end
 
+-- Graduates all santri whose studyProgress >= minProgress. Called by IdulFitri (T25).
+function SantriManager.graduateAllEligible(player: Player, minProgress: number): ()
+	local data = DataService.getPlayerData(player)
+	local eligible: { { id: string, santri: SantriRecord } } = {}
+	for santriId, santri in data.santriList do
+		if santri.studyProgress >= minProgress then
+			table.insert(eligible, { id = santriId, santri = santri })
+		end
+	end
+	for _, entry in eligible do
+		graduateSantri(player, entry.id, entry.santri)
+	end
+	if #eligible > 0 then
+		ReplicationService.syncAll(player)
+	end
+end
+
 -- ─── Masalah resolve / tutoring handlers ──────────────────────────────────────
 
 local function handleTutoring(player: Player, santriId: string): ()
@@ -294,6 +316,9 @@ task.spawn(function()
 				local makanDecay = Constants.NEED_MAKAN_DECAY
 				if hasFood then
 					makanDecay *= 0.5
+				end
+				if eventSvc().isSeasonalActive("Ramadan") then
+					makanDecay *= (1 - Constants.RAMADAN_NEED_MAKAN_DECAY_REDUCTION)
 				end
 
 				local ilmuDecay = Constants.NEED_ILMU_DECAY

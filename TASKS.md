@@ -641,7 +641,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 6 — Events & Live Retention
 
-- [ ] **T22 · Implement `EventService` — in-game event scheduler**
+- [x] **T22 · Implement `EventService` — in-game event scheduler**
 
   **File:** `src/Server/Services/EventService.luau`
 
@@ -662,7 +662,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** `getActiveMultiplier` returns correct combined multiplier during overlapping events.
 
-- [ ] **T23 · Implement Waktu Sholat bonus**
+- [x] **T23 · Implement Waktu Sholat bonus**
 
   **File:** `src/Server/Services/EventService.luau`
 
@@ -676,7 +676,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Banner appears 5 times per in-game day. Acknowledging triples income for 60 seconds. All 5 grants bonus chest.
 
-- [ ] **T24 · Implement Jum'at Berkah weekly event**
+- [x] **T24 · Implement Jum'at Berkah weekly event**
 
   **File:** `src/Server/Services/EventService.luau`
 
@@ -688,7 +688,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Every in-game Friday triggers for all online players. Income doubles for 30 in-game minutes.
 
-- [ ] **T25 · Implement seasonal event framework**
+- [x] **T25 · Implement seasonal event framework**
 
   **File:** `src/Server/Services/EventService.luau`
 
@@ -704,7 +704,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Toggling Ramadan doubles Barakah output. Idul Fitri auto-graduates eligible santri. Qurban spends Rupiah and raises rep.
 
-- [ ] **T26 · Implement Tabligh Akbar (server-wide event)**
+- [x] **T26 · Implement Tabligh Akbar (server-wide event)**
 
   **File:** `src/Server/Services/EventService.luau`
 

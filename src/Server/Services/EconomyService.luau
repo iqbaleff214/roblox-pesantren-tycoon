@@ -8,6 +8,11 @@ local ReplicationService = require(script.Parent.ReplicationService)
 local Types = require(ReplicatedStorage.Shared.Modules.Types)
 local Constants = require(ReplicatedStorage.Shared.Modules.Constants)
 
+-- Lazy: EventService requires EconomyService; break cycle by requiring at call time.
+local function eventSvc()
+	return require(script.Parent.EventService)
+end
+
 type Currency = Types.Currency
 type PlayerData = Types.PlayerData
 
@@ -68,6 +73,10 @@ local function rupiahMultiplier(player: Player, data: PlayerData): number
 		m *= Constants.KUNJUNGAN_MENTERI_MULTIPLIER
 	end
 
+	if data.waktuSholatActive and os.time() < data.waktuSholatExpiry then
+		m *= Constants.WAKTU_SHOLAT_MULTIPLIER
+	end
+
 	return m
 end
 
@@ -95,7 +104,9 @@ function EconomyService.addCurrency(player: Player, currency: Currency, amount: 
 	local effective = amount
 
 	if currency == "Rupiah" then
-		effective = math.floor(amount * rupiahMultiplier(player, data))
+		effective = math.floor(amount * rupiahMultiplier(player, data) * eventSvc().getActiveMultiplier(player))
+	elseif currency == "Barakah" then
+		effective = math.floor(amount * eventSvc().getActiveBarakahMultiplier())
 	end
 
 	local current = getBalance(data, currency)
