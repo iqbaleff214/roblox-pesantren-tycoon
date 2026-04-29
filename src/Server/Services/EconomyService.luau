@@ -18,6 +18,10 @@ local EconomyService = {}
 -- Defaults to false (non-premium) until explicitly set.
 local premiumPassOwners: { [number]: boolean } = {}
 
+-- Kunjungan Menteri temporary 5× multiplier: userId → expiry os.time().
+-- Set via EconomyService.setKunjunganActive; checked in rupiahMultiplier.
+local kunjunganExpiry: { [number]: number } = {}
+
 -- ─── Internal helpers ──────────────────────────────────────────────────────────
 
 -- Reads the raw balance for a given currency from player data.
@@ -47,7 +51,7 @@ local function makePatch(currency: Currency, value: number): { [string]: any }
 end
 
 -- Returns the combined multiplier applied to Rupiah income for this player.
--- Accounts for prestige, starter pack, and premium game pass.
+-- Accounts for prestige, starter pack, premium game pass, and Kunjungan Menteri.
 local function rupiahMultiplier(player: Player, data: PlayerData): number
 	local m = data.prestigeMultiplier
 
@@ -59,10 +63,21 @@ local function rupiahMultiplier(player: Player, data: PlayerData): number
 		m *= Constants.GAMEPASS_PREMIUM_MULTIPLIER
 	end
 
+	local expiry = kunjunganExpiry[player.UserId]
+	if expiry ~= nil and os.time() < expiry then
+		m *= Constants.KUNJUNGAN_MENTERI_MULTIPLIER
+	end
+
 	return m
 end
 
 -- ─── Public API ────────────────────────────────────────────────────────────────
+
+-- Activates the Kunjungan Menteri 5× Rupiah multiplier for `durationSec` seconds.
+-- Called by ReputationManager when tier-100 is reached (T20).
+function EconomyService.setKunjunganActive(player: Player, durationSec: number): ()
+	kunjunganExpiry[player.UserId] = os.time() + durationSec
+end
 
 -- Marks a player as owning the premium game pass.
 -- Called from init.server.luau during T41 MarketplaceService setup.

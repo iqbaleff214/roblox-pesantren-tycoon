@@ -71,10 +71,13 @@ local function maxBuildingLevel(data: PlayerData, buildingType: BuildingType): n
 	return maxLvl
 end
 
--- Returns first active ustadz assigned to the given program, or nil.
+-- Returns the active ustadz for the given program, or nil if none hired / on libur.
 local function getUstadzForProgram(data: PlayerData, program: SantriProgram): UstadzRecord?
 	for _, u in data.ustadzList do
 		if u.program == program then
+			if u.liburUntil ~= nil and os.time() < u.liburUntil then
+				return nil -- on libur; unavailable for teaching
+			end
 			return u
 		end
 	end

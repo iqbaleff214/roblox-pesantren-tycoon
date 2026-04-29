@@ -555,7 +555,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 4 — Ustadz System
 
-- [ ] **T18 · Implement `UstadzManager` — hire and assign**
+- [x] **T18 · Implement `UstadzManager` — hire and assign**
 
   **File:** `src/Server/Managers/UstadzManager.luau`
 
@@ -578,7 +578,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Hiring deducts correct currency, rarity rolls match weight table, Kyai Besar triggers server announcement.
 
-- [ ] **T19 · Implement ustadz fatigue tick**
+- [x] **T19 · Implement ustadz fatigue tick**
 
   **File:** `src/Server/Managers/UstadzManager.luau`
 
@@ -595,7 +595,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 5 — Reputation & Prestige
 
-- [ ] **T20 · Implement `ReputationManager`**
+- [x] **T20 · Implement `ReputationManager`**
 
   **File:** `src/Server/Managers/ReputationManager.luau`
 
@@ -617,7 +617,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Rep bar fills correctly. Tier 50 unlocks auto-enroll. Tier 100 triggers Kunjungan Menteri.
 
-- [ ] **T21 · Implement Buka Cabang (prestige reset)**
+- [x] **T21 · Implement Buka Cabang (prestige reset)**
 
   **File:** `src/Server/Managers/ReputationManager.luau`
 
