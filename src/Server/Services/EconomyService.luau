@@ -1,5 +1,6 @@
 --!strict
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local DataService = require(script.Parent.DataService)
@@ -119,5 +120,22 @@ end
 function EconomyService.canAfford(player: Player, currency: Currency, amount: number): boolean
 	return EconomyService.getCurrency(player, currency) >= amount
 end
+
+-- ─── Sedekah Jariyah passive income tick (T17) ────────────────────────────────
+-- Credits each connected player's accumulated alumni Rupiah every 60 seconds.
+-- sedekahJariyahPerMin grows permanently on every santri graduation (T15).
+task.spawn(function()
+	while true do
+		task.wait(60)
+		for _, player in Players:GetPlayers() do
+			if DataService.isLoaded(player) then
+				local data = DataService.getPlayerData(player)
+				if data.sedekahJariyahPerMin > 0 then
+					EconomyService.addCurrency(player, "Rupiah", data.sedekahJariyahPerMin)
+				end
+			end
+		end
+	end
+end)
 
 return EconomyService

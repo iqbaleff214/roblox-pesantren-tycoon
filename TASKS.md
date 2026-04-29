@@ -466,7 +466,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 3 — Santri System
 
-- [ ] **T13 · Implement `SantriManager` — spawn and enroll**
+- [x] **T13 · Implement `SantriManager` — spawn and enroll**
 
   **File:** `src/Server/Managers/SantriManager.luau`
 
@@ -486,7 +486,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Manual enroll works. Auto-enroll activates at rep 50. Enrolling beyond dormitory cap is rejected.
 
-- [ ] **T14 · Implement santri needs tick system**
+- [x] **T14 · Implement santri needs tick system**
 
   **File:** `src/Server/Managers/SantriManager.luau`
 
@@ -509,7 +509,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Needs decay over time. Food building slows Makan decay. Dropout occurs when needs stay critically low.
 
-- [ ] **T15 · Implement santri study → graduation lifecycle**
+- [x] **T15 · Implement santri study → graduation lifecycle**
 
   **File:** `src/Server/Managers/SantriManager.luau`
 
@@ -523,7 +523,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Santri progresses to 100%, graduation notification fires, alumni count increments, Sedekah Jariyah increases permanently.
 
-- [ ] **T16 · Implement Masalah (random crisis) event system**
+- [x] **T16 · Implement Masalah (random crisis) event system**
 
   **File:** `src/Server/Managers/SantriManager.luau`
 
@@ -539,7 +539,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Masalah events appear in client UI. Resolving deducts correct currency. Fast resolve grants reputation.
 
-- [ ] **T17 · Implement Sedekah Jariyah passive income tick**
+- [x] **T17 · Implement Sedekah Jariyah passive income tick**
 
   **File:** `src/Server/Services/EconomyService.luau`
 
