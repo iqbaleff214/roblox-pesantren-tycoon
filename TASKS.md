@@ -765,7 +765,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 8 — UI & HUD
 
-- [ ] **T30 · Implement HUD**
+- [x] **T30 · Implement HUD**
 
   **File:** `src/Client/Components/HUD.luau`
 
@@ -786,7 +786,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** All currencies display correctly. Renders without clipping on 375×667 mobile viewport (verify in Studio emulator).
 
-- [ ] **T31 · Implement BuildMenu**
+- [x] **T31 · Implement BuildMenu**
 
   **File:** `src/Client/Components/BuildMenu.luau`
 
@@ -800,7 +800,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** All PRD §4 buildings listed. Purchasing deducts currency and building appears in world.
 
-- [ ] **T32 · Implement SantriPanel**
+- [x] **T32 · Implement SantriPanel**
 
   **File:** `src/Client/Components/SantriPanel.luau`
 
@@ -812,7 +812,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Panel shows all santri. Need bars update in real time. Tutoring confirm works.
 
-- [ ] **T33 · Implement EventBanner**
+- [x] **T33 · Implement EventBanner**
 
   **File:** `src/Client/Components/EventBanner.luau`
 
@@ -835,7 +835,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** All event types show correct banners. Countdown accurate. Haptic fires on mobile/gamepad.
 
-- [ ] **T34 · Implement NotifController — toast alerts**
+- [x] **T34 · Implement NotifController — toast alerts**
 
   **File:** `src/Client/Controllers/NotifController.luau`
 
@@ -848,7 +848,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Masalah alerts appear and are tappable. Graduation toasts appear on each graduation.
 
-- [ ] **T35 · Implement InputController — cross-platform bindings**
+- [x] **T35 · Implement InputController — cross-platform bindings**
 
   **File:** `src/Client/Controllers/InputController.luau`
 
