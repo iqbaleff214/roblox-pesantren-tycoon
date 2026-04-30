@@ -180,6 +180,8 @@ function SantriManager.enrollSantri(player: Player, program: SantriProgram): boo
 
 	ReplicationService.syncAll(player)
 	BuildingManager.checkZoneUnlock(player)
+	-- T42: tutorial step 3 — first santri enrolled
+	eventSvc().advanceTutorialStep(player, "EnrollSantri")
 	return true
 end
 
@@ -205,6 +207,8 @@ local function graduateSantri(player: Player, santriId: string, santri: SantriRe
 
 	ReputationManager.addReputation(player, Constants.REP_PER_GRADUATION)
 	Events.NotifyGraduation:FireClient(player, santriId, santri.program)
+	-- T42: tutorial step 6 — first graduation
+	eventSvc().advanceTutorialStep(player, "Graduation")
 end
 
 -- Graduates all santri whose studyProgress >= minProgress. Called by IdulFitri (T25).

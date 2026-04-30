@@ -17,6 +17,11 @@ type PlayerData = Types.PlayerData
 type BuildingType = Types.BuildingType
 type BuildingDefinition = Types.BuildingDefinition
 
+-- Lazy: EventService → BuildingManager would be circular at load time
+local function getEventSvc()
+	return require(script.Parent.Parent.Services.EventService)
+end
+
 local BuildingManager = {}
 
 -- Server-session part references; populated by placeBuilding, lazily populated by findPart.
@@ -209,6 +214,8 @@ function BuildingManager.placeBuilding(player: Player, buildingType: BuildingTyp
 
 	ReplicationService.syncAll(player)
 	BuildingManager.checkZoneUnlock(player)
+	-- T42: advance tutorial if this building type is a tutorial trigger
+	getEventSvc().advanceTutorialStep(player, buildingType :: string)
 	return true
 end
 

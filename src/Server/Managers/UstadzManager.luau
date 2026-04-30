@@ -9,6 +9,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataService = require(script.Parent.Parent.Services.DataService)
 local EconomyService = require(script.Parent.Parent.Services.EconomyService)
 local ReplicationService = require(script.Parent.Parent.Services.ReplicationService)
+
+-- Lazy: EventService → UstadzManager would be circular at load time
+local function getEventSvc()
+	return require(script.Parent.Parent.Services.EventService)
+end
 local Events = require(ReplicatedStorage.Shared.Net.Events)
 local UstadzDefs = require(ReplicatedStorage.Shared.Data.UstadzData)
 local Constants = require(ReplicatedStorage.Shared.Modules.Constants)
@@ -121,6 +126,8 @@ function UstadzManager.hireUstadz(
 	end
 
 	ReplicationService.syncAll(player)
+	-- T42: tutorial step 5 — first ustadz hired
+	getEventSvc().advanceTutorialStep(player, "HireUstadz")
 	return true
 end
 

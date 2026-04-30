@@ -413,4 +413,56 @@ Events.TriggerQurban.OnServerEvent:Connect(function(player: Player)
 	})
 end)
 
+-- ─── T42: Tutorial step advancement ──────────────────────────────────────────
+-- trigger strings map to the step they complete:
+--   "Musholla" → step 1, "Dormitory" → step 2, "EnrollSantri" → step 3,
+--   "Education" → step 4, "HireUstadz" → step 5, "Graduation" → step 6
+local TUTORIAL_TRIGGERS: { [string]: number } = {
+	Musholla     = 1,
+	Dormitory    = 2,
+	EnrollSantri = 3,
+	Education    = 4,
+	HireUstadz   = 5,
+	Graduation   = 6,
+}
+
+function EventService.advanceTutorialStep(player: Player, trigger: string): ()
+	if not DataService.isLoaded(player) then
+		return
+	end
+	local data = DataService.getPlayerData(player)
+	if data.tutorialStep >= 6 then
+		return
+	end
+	local nextStep = TUTORIAL_TRIGGERS[trigger]
+	if nextStep == nil then
+		return
+	end
+	-- Enforce sequential order — only advance if this trigger is the next expected step
+	if data.tutorialStep ~= nextStep - 1 then
+		return
+	end
+	DataService.updatePlayerData(player, { tutorialStep = nextStep })
+	if nextStep == 6 then
+		Events.NotifyEvent:FireClient(player, { eventType = "TutorialComplete" })
+	else
+		Events.NotifyEvent:FireClient(player, { eventType = "TutorialStep", step = nextStep })
+	end
+	ReplicationService.syncAll(player)
+end
+
+-- SkipTutorial: allowed from step 3 onward
+Events.SkipTutorial.OnServerEvent:Connect(function(player: Player)
+	if not DataService.isLoaded(player) then
+		return
+	end
+	local data = DataService.getPlayerData(player)
+	if data.tutorialStep < 3 or data.tutorialStep >= 6 then
+		return
+	end
+	DataService.updatePlayerData(player, { tutorialStep = 6 })
+	Events.NotifyEvent:FireClient(player, { eventType = "TutorialComplete" })
+	ReplicationService.syncAll(player)
+end)
+
 return EventService

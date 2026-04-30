@@ -30,6 +30,7 @@ end
 -- TriggerQurban        : ()
 -- RequestVisit         : (friendUserId: number)       T27 — teleport to friend's server
 -- NotifyVisitArrival   : (hostUserId: number)         T27 — visitor announces arrival
+-- SkipTutorial         : ()                           T42 — skip from step 3 onward
 
 -- ─── Server → Client ──────────────────────────────────────────────────────────
 -- SyncPlayerData    : (data: PlayerData)
@@ -52,6 +53,7 @@ local Events = {
 	TriggerQurban = getOrCreate("TriggerQurban"),
 	RequestVisit = getOrCreate("RequestVisit"),
 	NotifyVisitArrival = getOrCreate("NotifyVisitArrival"),
+	SkipTutorial = getOrCreate("SkipTutorial"),
 	-- Server → Client (and broadcast)
 	SyncPlayerData = getOrCreate("SyncPlayerData"),
 	NotifyMasalah = getOrCreate("NotifyMasalah"),
