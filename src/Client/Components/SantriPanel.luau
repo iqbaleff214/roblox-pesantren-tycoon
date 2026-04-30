@@ -9,7 +9,12 @@
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local function getUIController()
+	return require(script.Parent.Parent.Controllers.UIController)
+end
 
 local Events = require(ReplicatedStorage.Shared.Net.Events)
 local Constants = require(ReplicatedStorage.Shared.Modules.Constants)
@@ -210,7 +215,7 @@ local function rebuildCards(): ()
 		-- Tap: show tutoring confirm if studyProgress >= 100
 		if santri.studyProgress >= 100 then
 			local tutoringBtn = Instance.new("TextButton")
-			tutoringBtn.Size = UDim2.fromScale(1, 0.14)
+			tutoringBtn.Size = UDim2.new(1, 0, 0, 44)
 			tutoringBtn.BackgroundColor3 = Color3.fromRGB(180, 120, 20)
 			tutoringBtn.TextScaled = true
 			tutoringBtn.Text = "Tutoring? (" .. Constants.TUTORING_COST_RUPIAH .. " Rp)"
@@ -237,6 +242,21 @@ function SantriPanel.open(): ()
 		Position = UDim2.fromScale(0.1, 0.1),
 	}):Play()
 	rebuildCards()
+	-- T38: register scroll frame for gamepad thumbstick; focus first tutoring button if any
+	getUIController().setActiveScroll(scrollFrame)
+	local firstBtn: GuiObject? = nil
+	for _, child in scrollFrame:GetChildren() do
+		if child:IsA("Frame") then
+			local btn = child:FindFirstChildWhichIsA("TextButton")
+			if btn ~= nil then
+				firstBtn = btn :: GuiObject
+				break
+			end
+		end
+	end
+	if firstBtn ~= nil then
+		GuiService.SelectedObject = firstBtn
+	end
 end
 
 function SantriPanel.close(): ()
@@ -244,6 +264,7 @@ function SantriPanel.close(): ()
 	TweenService:Create(panel, SLIDE, {
 		Position = UDim2.fromScale(0.1, 1.1),
 	}):Play()
+	getUIController().setActiveScroll(nil)
 end
 
 function SantriPanel.toggle(): ()
@@ -274,8 +295,9 @@ function SantriPanel.init(): ()
 	corner.CornerRadius = UDim.new(0.03, 0)
 	corner.Parent = panel
 
+	-- T37: 44 px touch target for title bar and close button
 	local title = Instance.new("TextLabel")
-	title.Size = UDim2.fromScale(1, 0.07)
+	title.Size = UDim2.new(1, 0, 0, 44)
 	title.TextScaled = true
 	title.BackgroundColor3 = Color3.fromRGB(40, 80, 40)
 	title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -285,7 +307,7 @@ function SantriPanel.init(): ()
 	local closeBtn = Instance.new("TextButton")
 	closeBtn.AnchorPoint = Vector2.new(1, 0)
 	closeBtn.Position = UDim2.fromScale(1, 0)
-	closeBtn.Size = UDim2.fromScale(0.1, 0.07)
+	closeBtn.Size = UDim2.new(0.15, 0, 0, 44)
 	closeBtn.BackgroundColor3 = Color3.fromRGB(150, 40, 40)
 	closeBtn.TextScaled = true
 	closeBtn.Text = "X"
@@ -296,8 +318,8 @@ function SantriPanel.init(): ()
 	end)
 
 	scrollFrame = Instance.new("ScrollingFrame")
-	scrollFrame.Position = UDim2.fromScale(0, 0.08)
-	scrollFrame.Size = UDim2.fromScale(1, 0.92)
+	scrollFrame.Position = UDim2.fromOffset(0, 46)
+	scrollFrame.Size = UDim2.new(1, 0, 1, -46)
 	scrollFrame.BackgroundTransparency = 1
 	scrollFrame.ScrollBarThickness = 6
 	scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y

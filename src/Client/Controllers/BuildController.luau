@@ -7,6 +7,7 @@
 --      every SyncPlayerData event (in case prestige multipliers change in future).
 
 local CollectionService = game:GetService("CollectionService")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Events = require(ReplicatedStorage.Shared.Net.Events)
@@ -149,6 +150,37 @@ end
 
 Events.SyncPlayerData.OnClientEvent:Connect(function()
 	refreshAllIncomeLabels()
+end)
+
+-- ─── T36: LOD — set Model.LevelOfDetail based on camera distance ─────────────
+local LOD_DISTANCE = 150
+local lodAccum = 0
+
+RunService.Heartbeat:Connect(function(dt: number)
+	lodAccum += dt
+	if lodAccum < 1 then
+		return
+	end
+	lodAccum = 0
+
+	local camera = workspace.CurrentCamera
+	if camera == nil then
+		return
+	end
+	local camPos = camera.CFrame.Position
+
+	for _, inst in CollectionService:GetTagged("Building") do
+		if inst:IsA("BasePart") then
+			local part = inst :: BasePart
+			local model = part:FindFirstAncestorOfClass("Model")
+			if model ~= nil then
+				local dist = (camPos - part.Position).Magnitude
+				model.LevelOfDetail = if dist > LOD_DISTANCE
+					then Enum.ModelLevelOfDetail.Automatic
+					else Enum.ModelLevelOfDetail.Disabled
+			end
+		end
+	end
 end)
 
 return BuildController

@@ -17,6 +17,10 @@ local ReplicationService = {}
 type DirtyMode = "all" | "currencies"
 local dirtyFlags: { [number]: DirtyMode } = {} -- keyed by UserId
 
+-- T39: per-player fire counter for dev-mode RPS guard
+local rpsCounters: { [number]: number } = {}
+local rpsTimer = 0
+
 -- ─── Dirty-flag helpers ────────────────────────────────────────────────────────
 
 local function markDirty(player: Player, mode: DirtyMode): ()
@@ -56,14 +60,11 @@ end
 -- Flushes all dirty players once per frame.
 -- Collecting keys first avoids modifying dirtyFlags while iterating it.
 
-RunService.Heartbeat:Connect(function()
+RunService.Heartbeat:Connect(function(dt: number)
 	-- Collect all dirty userIds
 	local pending: { number } = {}
 	for userId in dirtyFlags do
 		table.insert(pending, userId)
-	end
-	if #pending == 0 then
-		return
 	end
 
 	for _, userId in pending do
@@ -94,7 +95,26 @@ RunService.Heartbeat:Connect(function()
 		end)
 		if not ok then
 			warn(string.format("[ReplicationService] Heartbeat flush failed for userId %d: %s", userId, tostring(err)))
+		else
+			-- T39: count this fire for RPS guard
+			rpsCounters[userId] = (rpsCounters[userId] or 0) + 1
 		end
+	end
+
+	-- T39: once per second, warn if any player exceeded 20 SyncPlayerData fires/sec
+	rpsTimer += dt
+	if rpsTimer >= 1 then
+		rpsTimer = 0
+		for userId, count in rpsCounters do
+			if count > 20 then
+				warn(string.format(
+					"[ReplicationService] RPS guard: userId %d fired SyncPlayerData %d times/sec (limit 20)",
+					userId,
+					count
+				))
+			end
+		end
+		table.clear(rpsCounters)
 	end
 end)
 

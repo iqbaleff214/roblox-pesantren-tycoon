@@ -3,6 +3,13 @@
 -- Bootstrap: require all services and managers, wire player lifecycle.
 -- Order matters: DataService must be loaded before Replication or Economy.
 
+-- T36: Instance streaming — must be set before any player loads
+-- Cast to any: luau-lsp marks these as read-only but they are settable at runtime.
+local ws = workspace :: any
+ws.StreamingEnabled = true
+ws.StreamingMinRadius = 64
+ws.StreamingTargetRadius = 256
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")

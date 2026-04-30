@@ -267,6 +267,7 @@ function HUD.init(): ()
 	InputController.onAction("CloseMenu"):Connect(function()
 		getBuildMenu().close()
 		getSantriPanel().close()
+		GuiService.SelectedObject = nil -- T38: release gamepad focus on close
 	end)
 
 	-- ── SyncPlayerData ─────────────────────────────────────────────────────────

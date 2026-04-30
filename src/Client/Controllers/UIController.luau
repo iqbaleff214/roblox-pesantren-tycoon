@@ -2,10 +2,14 @@
 
 -- T27: Visit Mode — friend list, live visit teleport, offline snapshot display.
 -- T29: Leaderboard data retrieval for the social panel.
+-- T38: Gamepad navigation — AutoSelectGuiEnabled, thumbstick scroll registration.
 -- Rendering is handled by HUD.luau (T30); this module is pure logic.
 
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
+local UserInputService = game:GetService("UserInputService")
+local ContextActionService = game:GetService("ContextActionService")
+local GuiService = game:GetService("GuiService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Events = require(ReplicatedStorage.Shared.Net.Events)
@@ -27,11 +31,57 @@ export type FriendCard = {
 
 local UIController = {}
 
+-- ── T38: Gamepad thumbstick scroll ────────────────────────────────────────────
+
+local activeScroll: ScrollingFrame? = nil
+local SCROLL_SPEED = 8
+
+-- Panels call this on open/close to register which ScrollingFrame thumbstick scrolls.
+function UIController.setActiveScroll(frame: ScrollingFrame?): ()
+	activeScroll = frame
+end
+
+local function onThumbstickScroll(
+	_actionName: string,
+	inputState: Enum.UserInputState,
+	inputObject: InputObject
+): Enum.ContextActionResult
+	if inputState ~= Enum.UserInputState.Change then
+		return Enum.ContextActionResult.Pass
+	end
+	local frame = activeScroll
+	if frame == nil then
+		return Enum.ContextActionResult.Pass
+	end
+	local newY = frame.CanvasPosition.Y - inputObject.Position.Y * SCROLL_SPEED
+	local maxY = math.max(0, frame.AbsoluteCanvasSize.Y - frame.AbsoluteSize.Y)
+	frame.CanvasPosition = Vector2.new(frame.CanvasPosition.X, math.clamp(newY, 0, maxY))
+	return Enum.ContextActionResult.Sink
+end
+
 -- ── T27: Visit arrival detection ──────────────────────────────────────────────
 
 -- Call once from init.client.luau on game start.
 -- If this session was entered via a RequestVisit teleport, announces arrival to server.
 function UIController.init(): ()
+	-- T38: disable Roblox auto-select when a gamepad is present
+	local function disableAutoSelect(): ()
+		GuiService.AutoSelectGuiEnabled = false
+	end
+	UserInputService.GamepadConnected:Connect(disableAutoSelect)
+	if #UserInputService:GetConnectedGamepads() > 0 then
+		disableAutoSelect()
+	end
+
+	-- T38: bind left thumbstick to scroll the active panel ScrollingFrame
+	ContextActionService:BindAction(
+		"PesantrenGamepadScroll",
+		onThumbstickScroll,
+		false,
+		Enum.KeyCode.Thumbstick1
+	)
+
+	-- T27: teleport arrival — announce to host server
 	local ok, data = pcall(function(): any
 		return TeleportService:GetLocalPlayerTeleportData()
 	end)

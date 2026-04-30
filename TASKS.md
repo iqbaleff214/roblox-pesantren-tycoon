@@ -875,7 +875,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 9 — Cross-Platform & Performance
 
-- [ ] **T36 · Enable StreamingEnabled and LOD**
+- [x] **T36 · Enable StreamingEnabled and LOD**
 
   **(Roblox Studio configuration + script)**
 
@@ -885,7 +885,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Studio profiler shows < 2,000 parts loaded at any time with all zones built.
 
-- [ ] **T37 · Mobile safe area and touch target audit**
+- [x] **T37 · Mobile safe area and touch target audit**
 
   **Files:** All `src/Client/Components/*.luau`
 
@@ -898,7 +898,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Zero clipping or overflow at both test resolutions. All buttons tappable without zoom.
 
-- [ ] **T38 · Gamepad navigation audit**
+- [x] **T38 · Gamepad navigation audit**
 
   **File:** `src/Client/Controllers/UIController.luau`
 
@@ -910,7 +910,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Full game loop (build → hire → graduate) completable using only gamepad.
 
-- [ ] **T39 · Network RPS guard**
+- [x] **T39 · Network RPS guard**
 
   **File:** `src/Server/Services/ReplicationService.luau`
 

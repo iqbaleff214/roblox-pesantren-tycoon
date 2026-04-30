@@ -26,11 +26,16 @@ local BUILDING_ORDER: { string } = {
 	"Economy", "Library", "Studio", "LabKomputer", "Klinik", "Aula",
 }
 
+local function getUIController()
+	return require(script.Parent.Parent.Controllers.UIController)
+end
+
 local BuildMenu = {}
 
 local menuGui: ScreenGui
 local panel: Frame
 local gridFrame: Frame
+local scrollFrame: ScrollingFrame
 local isOpen = false
 local latestData: PlayerData? = nil
 
@@ -169,7 +174,7 @@ local function rebuildGrid(): ()
 		-- Action button
 		if not locked and not maxed then
 			local actionBtn = Instance.new("TextButton")
-			actionBtn.Size = UDim2.fromScale(0.85, 0.2)
+			actionBtn.Size = UDim2.new(0.85, 0, 0, 44)
 			actionBtn.BackgroundColor3 = Color3.fromRGB(50, 130, 50)
 			actionBtn.TextScaled = true
 			actionBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -215,6 +220,7 @@ function BuildMenu.open(): ()
 		Position = UDim2.fromScale(0.05, 0.15),
 	}):Play()
 	rebuildGrid()
+	getUIController().setActiveScroll(scrollFrame)
 end
 
 function BuildMenu.close(): ()
@@ -222,6 +228,7 @@ function BuildMenu.close(): ()
 	TweenService:Create(panel, SLIDE, {
 		Position = UDim2.fromScale(0.05, 1.1),
 	}):Play()
+	getUIController().setActiveScroll(nil)
 end
 
 function BuildMenu.toggle(): ()
@@ -252,8 +259,9 @@ function BuildMenu.init(): ()
 	corner.CornerRadius = UDim.new(0.03, 0)
 	corner.Parent = panel
 
+	-- T37: title + close button both 44 px tall — pixel height guarantees touch target
 	local title = Instance.new("TextLabel")
-	title.Size = UDim2.fromScale(1, 0.07)
+	title.Size = UDim2.new(1, 0, 0, 44)
 	title.TextScaled = true
 	title.BackgroundColor3 = Color3.fromRGB(30, 70, 30)
 	title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -263,7 +271,7 @@ function BuildMenu.init(): ()
 	local closeBtn = Instance.new("TextButton")
 	closeBtn.AnchorPoint = Vector2.new(1, 0)
 	closeBtn.Position = UDim2.fromScale(1, 0)
-	closeBtn.Size = UDim2.fromScale(0.1, 0.07)
+	closeBtn.Size = UDim2.new(0.12, 0, 0, 44)
 	closeBtn.BackgroundColor3 = Color3.fromRGB(150, 40, 40)
 	closeBtn.TextScaled = true
 	closeBtn.Text = "X"
@@ -273,10 +281,10 @@ function BuildMenu.init(): ()
 		BuildMenu.close()
 	end)
 
-	-- Scrollable grid container
-	local scrollFrame = Instance.new("ScrollingFrame")
-	scrollFrame.Position = UDim2.fromScale(0, 0.08)
-	scrollFrame.Size = UDim2.fromScale(1, 0.92)
+	-- Scrollable grid container — offset 46 px to clear title bar
+	scrollFrame = Instance.new("ScrollingFrame")
+	scrollFrame.Position = UDim2.fromOffset(0, 46)
+	scrollFrame.Size = UDim2.new(1, 0, 1, -46)
 	scrollFrame.BackgroundTransparency = 1
 	scrollFrame.ScrollBarThickness = 6
 	scrollFrame.AutomaticCanvasSize = Enum.AutomaticSize.XY
