@@ -923,7 +923,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 10 — Monetization
 
-- [ ] **T40 · Implement MarketplaceService product handler**
+- [x] **T40 · Implement MarketplaceService product handler**
 
   **File:** `src/Server/Services/DataService.luau`
 
@@ -941,7 +941,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
   **Done when:** Time Skip grants correct Rupiah. Starter Pack doubles income for 30 minutes. No duplicate grants.
 
-- [ ] **T41 · Implement Game Pass checks**
+- [x] **T41 · Implement Game Pass checks**
 
   **File:** `src/Server/Services/DataService.luau`
 
@@ -957,7 +957,7 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 11 — Tutorial & Progression Flow
 
-- [ ] **T42 · Implement tutorial flow**
+- [x] **T42 · Implement tutorial flow**
 
   **Files:** `src/Client/Controllers/UIController.luau`, `src/Server/Services/EventService.luau`
 
