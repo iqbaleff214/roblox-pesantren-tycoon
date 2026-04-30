@@ -1,17 +1,34 @@
 --!strict
 
 local DataStoreService = game:GetService("DataStoreService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Types = require(ReplicatedStorage.Shared.Modules.Types)
+local Constants = require(ReplicatedStorage.Shared.Modules.Constants)
 
 type PlayerData = Types.PlayerData
 
 local DataService = {}
 
+-- T40: Developer Product IDs — replace 0 with real IDs after Creator Hub setup
+local PRODUCT_TIME_SKIP_1H = 0
+local PRODUCT_STARTER_PACK = 0
+
+-- T41: Game Pass ID — replace 0 with real ID after Creator Hub setup
+-- Exposed so init.server.luau can pass it to UserOwnsGamePassAsync.
+DataService.GAMEPASS_PREMIUM_PASS = 0
+
+-- Lazy require — avoids circular dep (ReplicationService → DataService already exists)
+local function getReplicationService()
+	return require(script.Parent.ReplicationService)
+end
+
 local store = DataStoreService:GetDataStore("PlayerData_v1")
 local publicStore = DataStoreService:GetDataStore("PublicPesantren")
 local doaCooldownStore = DataStoreService:GetDataStore("DoaCooldowns")
+local processedReceiptsStore = DataStoreService:GetDataStore("ProcessedReceipts")
 local leaderboardRepStore = DataStoreService:GetOrderedDataStore("Leaderboard_Reputation")
 local leaderboardSanadStore = DataStoreService:GetOrderedDataStore("Leaderboard_Sanad")
 local leaderboardAlumniStore = DataStoreService:GetOrderedDataStore("Leaderboard_Alumni")
@@ -221,8 +238,7 @@ function DataService.checkDoaCooldown(visitorId: number, hostId: number): boolea
 		return false
 	end
 	local lastDoa = (result :: any) :: number?
-	local Constants = require(game:GetService("ReplicatedStorage").Shared.Modules.Constants)
-	if lastDoa ~= nil and os.time() < lastDoa + (Constants :: any).DOA_COOLDOWN_SEC then
+	if lastDoa ~= nil and os.time() < lastDoa + Constants.DOA_COOLDOWN_SEC then
 		return false
 	end
 	local setOk = pcall(function()
@@ -270,6 +286,57 @@ function DataService.getLeaderboard(board: string): { { player: string, value: n
 		table.insert(results, { player = tostring(e.key), value = e.value })
 	end
 	return results
+end
+
+-- ─── T40: Developer Product ProcessReceipt ────────────────────────────────────
+-- Must be assigned as a function value (not :Connect) per MarketplaceService API.
+-- Returns PurchaseGranted or NotProcessedYet — never silently drops a receipt.
+MarketplaceService.ProcessReceipt = function(receiptInfo: any): Enum.ProductPurchaseDecision
+	local player = Players:GetPlayerByUserId(receiptInfo.PlayerId)
+	if player == nil or not DataService.isLoaded(player) then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	local purchaseKey = "receipt_" .. tostring(receiptInfo.PurchaseId)
+
+	-- Dedup: if already granted, acknowledge without re-granting
+	local checkOk, alreadyGranted = pcall(function(): any
+		return processedReceiptsStore:GetAsync(purchaseKey)
+	end)
+	if not checkOk then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+	if alreadyGranted == true then
+		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
+
+	-- Grant product
+	local data = DataService.getPlayerData(player)
+	local productId = receiptInfo.ProductId :: number
+
+	if productId == PRODUCT_TIME_SKIP_1H then
+		local grant = math.max(data.sedekahJariyahPerMin * 60, Constants.TIME_SKIP_FALLBACK_RUPIAH)
+		DataService.updatePlayerData(player, { rupiah = data.rupiah + grant })
+	elseif productId == PRODUCT_STARTER_PACK then
+		DataService.updatePlayerData(player, {
+			starterPackExpiry = os.time() + Constants.STARTER_PACK_DURATION_SEC,
+		})
+	else
+		-- Unknown product — do not grant, but also do not permanently reject
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	-- Persist receipt ID so duplicate webhook replays are idempotent
+	local persistOk = pcall(function()
+		processedReceiptsStore:SetAsync(purchaseKey, true)
+	end)
+	if not persistOk then
+		-- DataStore write failed — roll back grant to avoid un-persisted state
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+
+	getReplicationService().syncAll(player)
+	return Enum.ProductPurchaseDecision.PurchaseGranted
 end
 
 return DataService

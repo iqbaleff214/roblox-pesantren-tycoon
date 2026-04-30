@@ -13,6 +13,7 @@ ws.StreamingTargetRadius = 256
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
+local MarketplaceService = game:GetService("MarketplaceService")
 
 -- ── Force RemoteEvents/Functions to exist in ReplicatedStorage ────────────────
 -- Events.luau and Functions.luau use getOrCreate — requiring them here ensures
@@ -23,7 +24,7 @@ local Functions = require(ReplicatedStorage.Shared.Net.Functions)
 -- ── Services ──────────────────────────────────────────────────────────────────
 local DataService = require(script.Services.DataService)
 local ReplicationService = require(script.Services.ReplicationService)
-require(script.Services.EconomyService)
+local EconomyService = require(script.Services.EconomyService)
 local EventService = require(script.Services.EventService)
 
 -- ── Managers ──────────────────────────────────────────────────────────────────
@@ -126,7 +127,18 @@ local function onPlayerAdded(player: Player): ()
 	-- 1. Load data (may yield up to 3s on retry)
 	DataService.loadPlayer(player)
 
-	-- 2. Auto-save loop — runs until the player leaves
+	-- 2. T41: verify game pass ownership — re-check each join, never read from DataStore
+	task.spawn(function()
+		local ok, owned = pcall(function(): any
+			return MarketplaceService:UserOwnsGamePassAsync(
+				player.UserId,
+				DataService.GAMEPASS_PREMIUM_PASS
+			)
+		end)
+		EconomyService.setPremiumPass(player.UserId, ok and owned == true)
+	end)
+
+	-- 3. Auto-save loop — runs until the player leaves
 	task.spawn(function()
 		while player.Parent ~= nil do
 			task.wait(300) -- 5 minutes
@@ -136,7 +148,7 @@ local function onPlayerAdded(player: Player): ()
 		end
 	end)
 
-	-- 3. Push initial state to client
+	-- 4. Push initial state to client
 	ReplicationService.syncAll(player)
 end
 
