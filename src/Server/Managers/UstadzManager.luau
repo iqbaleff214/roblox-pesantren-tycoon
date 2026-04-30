@@ -206,15 +206,22 @@ end)
 
 -- ─── RemoteEvent: HireUstadz ──────────────────────────────────────────────────
 
+local VALID_PROGRAMS: { [string]: boolean } = {
+	Tahfidz = true, KitabKuning = true, Bahasa = true, Wirausaha = true, Teknologi = true,
+}
+local VALID_RARITIES: { [string]: boolean } = {
+	Biasa = true, Terkenal = true, KyaiBesar = true,
+}
+
 Events.HireUstadz.OnServerEvent:Connect(function(player: Player, rawProgram: any, rawRarity: any)
-	if type(rawProgram) ~= "string" then
+	if type(rawProgram) ~= "string" or not VALID_PROGRAMS[rawProgram] then
 		return
 	end
 	if not DataService.isLoaded(player) then
 		return
 	end
 	local targetRarity: UstadzRarity? = nil
-	if type(rawRarity) == "string" then
+	if type(rawRarity) == "string" and VALID_RARITIES[rawRarity] then
 		targetRarity = rawRarity :: UstadzRarity
 	end
 	UstadzManager.hireUstadz(player, rawProgram :: SantriProgram, targetRarity)

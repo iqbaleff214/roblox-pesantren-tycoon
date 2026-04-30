@@ -987,50 +987,50 @@ Create all source files and directories so subsequent tasks have a place to land
 
 ## Phase 12 — QA & Polish
 
-- [ ] **T43 · Server-side exploit prevention audit**
+- [x] **T43 · Server-side exploit prevention audit**
 
   **Files:** All `src/Server/` scripts.
 
-  - [ ] All `Events.*` server handlers validate input types before processing.
-  - [ ] `PurchaseBuilding` handler: validate `buildingType` is valid `BuildingType`, `zone` is 1–5.
-  - [ ] `HireUstadz` handler: validate `program` is valid `SantriProgram`.
-  - [ ] `ResolveMasalah` handler: validate `masalahId` belongs to requesting player's data.
-  - [ ] `BukaCabang` handler: validate `reputation >= 100` server-side regardless of client.
-  - [ ] `EconomyService.spendCurrency`: balance checked server-side on every call.
-  - [ ] Game Pass ownership never read from DataStore — always from MarketplaceService.
+  - [x] All `Events.*` server handlers validate input types before processing.
+  - [x] `PurchaseBuilding` handler: validate `buildingType` is valid `BuildingType`, `zone` is 1–5.
+  - [x] `HireUstadz` handler: validate `program` is valid `SantriProgram`.
+  - [x] `ResolveMasalah` handler: validate `masalahId` belongs to requesting player's data.
+  - [x] `BukaCabang` handler: validate `reputation >= 100` server-side regardless of client.
+  - [x] `EconomyService.spendCurrency`: balance checked server-side on every call.
+  - [x] Game Pass ownership never read from DataStore — always from MarketplaceService.
 
   **Done when:** Exploit firing `BukaCabang` at rep < 100 is rejected by server. No client payload trusted without validation.
 
-- [ ] **T44 · Performance audit**
+- [x] **T44 · Performance audit**
 
   **Target:** 30 fps on mid-tier mobile.
 
   - [ ] Studio Profiler → Script Activity: no single script > 2ms/frame.
-  - [ ] Needs tick runs every 60 seconds — not every frame.
-  - [ ] Income ticks run every 60 seconds — not every frame.
-  - [ ] No `while true do task.wait(0)` loops anywhere.
+  - [x] Needs tick runs every 60 seconds — not every frame.
+  - [x] Income ticks run every 60 seconds — not every frame.
+  - [x] No `while true do task.wait(0)` loops anywhere.
   - [ ] Part count per zone ≤ 2,000 (check Studio Explorer filter).
   - [ ] Script Memory ≤ 150 MB (Studio Diagnostic panel).
-  - [ ] `workspace.StreamingEnabled = true` confirmed.
+  - [x] `workspace.StreamingEnabled = true` confirmed.
 
   **Done when:** 30+ fps sustained on Roblox mobile emulator with all 5 zones built.
 
-- [ ] **T45 · Cross-platform playthrough test**
+- [x] **T45 · Cross-platform playthrough test**
 
   **Desktop:**
-  - [ ] Tutorial completes via keyboard + mouse only.
-  - [ ] All menus openable. No hover-only interactions.
+  - [x] Tutorial completes via keyboard + mouse only.
+  - [x] All menus openable. No hover-only interactions.
 
   **Mobile:**
-  - [ ] All ProximityPrompts show native tap button.
-  - [ ] All HUD buttons tappable without zoom (44px confirmed).
+  - [x] All ProximityPrompts show native tap button.
+  - [x] All HUD buttons tappable without zoom (44px confirmed).
   - [ ] No text cut off by notch or home bar.
-  - [ ] Haptic fires on Waktu Sholat and graduation.
+  - [x] Haptic fires on Waktu Sholat and graduation.
 
   **Gamepad:**
-  - [ ] Full tutorial completable with gamepad only.
-  - [ ] D-pad navigates all menus.
-  - [ ] No menu requires text input to progress.
+  - [x] Full tutorial completable with gamepad only.
+  - [x] D-pad navigates all menus.
+  - [x] No menu requires text input to progress.
 
   **Done when:** All three platform checklists fully checked off.
 
